@@ -4,8 +4,6 @@ require("hardhat-deploy")
 require("solidity-coverage")
 require("hardhat-gas-reporter")
 require("hardhat-contract-sizer")
-require("./tasks")
-require("@appliedblockchain/chainlink-plugins-fund-link")
 require("dotenv").config()
 
 /**
@@ -28,7 +26,7 @@ module.exports = {
     localhost: {
       chainId: 31337,
     },
-    mumbai: {
+    /*mumbai: {
       url: POLYGON_MUMBAI_RPC_URL,
       accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
       saveDeployments: true,
@@ -39,7 +37,7 @@ module.exports = {
       accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
       saveDeployments: true,
       chainId: 137,
-    },
+    },*/
   },
   etherscan: {
     // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
