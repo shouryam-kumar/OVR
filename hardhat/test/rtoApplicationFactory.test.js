@@ -3,12 +3,13 @@ const { assert, expect } = require("chai")
 const { getNamedAccounts, ethers } = require("hardhat")
 
 describe("RTOApplicationFactory Unit Tests", function() {
-    let deployer, rtoApplicationFactory, mockRTORegistrationService
+    let deployer, dummy, rtoApplicationFactory, mockRTORegistrationService
     
 
     beforeEach(async() => {
         accounts = await ethers.getSigners()
         deployer = accounts[0]
+        dummy = accounts[1]
         const RTOApplicationFactoryFactory = await ethers.getContractFactory("RTOApplicationFactory")
         rtoApplicationFactory = await RTOApplicationFactoryFactory.deploy()
         const MockRTORegistrationServiceFactory = await ethers.getContractFactory("MockRTORegistrationService")
@@ -66,6 +67,57 @@ describe("RTOApplicationFactory Unit Tests", function() {
                 })
             })
         })
-        
+    })
+
+    describe("Creating and Submitting Application", () => {
+        describe("Creating an RTO Application", () => {
+            describe("createNewRTOApplication", () => {
+                it("can only be called by owner", async function () {
+                    await expect(rtoApplicationFactory.createNewRTOApplication())
+                        .to
+                        .not
+                        .be
+                        .revertedWith("")
+                    await expect(rtoApplicationFactory.connect(dummy).createNewRTOApplication())
+                        .to
+                        .be
+                        .revertedWith("")
+                }),
+                it("reverts when service address is zero", async function () {
+                    await rtoApplicationFactory.setRTORegistrationService(ethers.constants.AddressZero)
+                    await expect(rtoApplicationFactory.createNewRTOApplication())
+                        .to
+                        .be
+                        .revertedWith("")
+                }),
+                it("emits creation event", async function () {
+                    await expect(rtoApplicationFactory.createNewRTOApplication())
+                        .to
+                        .emit(rtoApplicationFactory, "RTOApplicationCreated")
+                        .withArgs(1)
+                }),
+                it("increments the id correctly", async function () {
+                    await rtoApplicationFactory.createNewRTOApplication()
+                    assert.equal(await rtoApplicationFactory.getApplicationId(), 2)
+                })
+
+            })
+        }),
+
+        describe("Submitting an RTO Application", () => {
+            describe("submitRTOApplication", () => {
+                it("can only be called by owner", async function () {
+                    await rtoApplicationFactory.createNewRTOApplication()
+                    await expect(rtoApplicationFactory.submitRTOApplication(1))
+                        .to.not.be.revertedWith("")
+                    await expect(rtoApplicationFactory.connect(dummy).submitRTOApplication(0))
+                        .to.be.revertedWith("")
+                }),
+                it("reverts when invalid Id is provided", async function () {
+                    await expect(rtoApplicationFactory.submitRTOApplication(12312))
+                        .to.be.revertedWith("")
+                })
+            })
+        })
     })
 })
