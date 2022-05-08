@@ -131,7 +131,7 @@ describe("RTOApplicationFactory Unit Tests", function() {
                         .to
                         .emit(rtoApplicationFactory, "RTOApplicationSubmitted")
                         .withArgs(1)
-                }),
+                })
             })
         })
     })
