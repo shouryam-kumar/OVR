@@ -113,10 +113,25 @@ describe("RTOApplicationFactory Unit Tests", function() {
                     await expect(rtoApplicationFactory.connect(dummy).submitRTOApplication(0))
                         .to.be.revertedWith("")
                 }),
+                it("reverts when service address is zero", async function () {
+                    await rtoApplicationFactory.createNewRTOApplication()
+                    await rtoApplicationFactory.setRTORegistrationService(ethers.constants.AddressZero)
+                    await expect(rtoApplicationFactory.submitRTOApplication(1))
+                        .to
+                        .be
+                        .revertedWith("")
+                }),
                 it("reverts when invalid Id is provided", async function () {
                     await expect(rtoApplicationFactory.submitRTOApplication(12312))
                         .to.be.revertedWith("")
-                })
+                }),
+                it("emits submit event", async function () {
+                    await rtoApplicationFactory.createNewRTOApplication()
+                    await expect(rtoApplicationFactory.submitRTOApplication(1))
+                        .to
+                        .emit(rtoApplicationFactory, "RTOApplicationSubmitted")
+                        .withArgs(1)
+                }),
             })
         })
     })
